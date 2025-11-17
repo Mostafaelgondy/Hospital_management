@@ -23,4 +23,5 @@ git clone https://github.com/Mostafaelgondy/Hospital_management.git
 cd Hospital_management
 
 # Run setup
+python api/app.py
 python setup.py
