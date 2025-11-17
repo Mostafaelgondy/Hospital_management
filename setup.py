@@ -30,12 +30,12 @@ def setup_system():
         os.makedirs(directory, exist_ok=True)
         print(f"📁 Created directory: {directory}")
     
-    # # Install requirements
-    # if run_command("pip install -r api/requirements.txt", "Installing Python dependencies"):
-    #     print("✅ All dependencies installed successfully!")
-    # else:
-    #     print("❌ Failed to install dependencies")
-    #     return False
+    # Install requirements
+    if run_command("pip install -r api/requirements.txt", "Installing Python dependencies"):
+        print("✅ All dependencies installed successfully!")
+    else:
+        print("❌ Failed to install dependencies")
+        return False
     
     # Initialize database
     if run_command("python database/create_database.py", "Initializing database"):
@@ -61,3 +61,4 @@ def setup_system():
 
 if __name__ == "__main__":
     setup_system()
+
