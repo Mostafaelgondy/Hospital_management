@@ -19,7 +19,7 @@ A comprehensive AI-driven medical decision support system that helps healthcare 
 ### Installation
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/medical-ai-system.git
+git clone https://github.com/Mostafaelgondy/Hospital_management.git
 cd medical-ai-system
 
 # Run setup
