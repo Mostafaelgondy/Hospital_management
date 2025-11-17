@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, request, jsonify, render_template
 import joblib
 import pandas as pd
@@ -24,10 +25,10 @@ try:
     feature_columns = model_package['feature_columns']
     symptoms_list = model_package['symptoms_list']    
     print("✅ Model loaded successfully!")
-    print(f"📊 Model type: {model_package['model_type']}")
-    print(f"🎯 Target classes: {target_encoder.classes_}")
+    print("📊 Model type: ",model_package['model_type'])
+    print("🎯 Target classes: ",target_encoder.classes_)
 except Exception as e:
-    print(f"❌ Error loading model: {e}")
+    print("❌ Error loading model: ",e)
     model = None
     model_package = None
 
@@ -45,7 +46,7 @@ class MedicalSystem:
         """Find the database file in common locations"""
         for path in self.db_paths:
             if os.path.exists(path):
-                print(f"✅ Database found: {path}")
+                print(" Database found: ",path)
                 return path
         print("❌ No database file found!")
         return None
