@@ -20,7 +20,7 @@ A comprehensive AI-driven medical decision support system that helps healthcare 
 ```bash
 # Clone repository
 git clone https://github.com/Mostafaelgondy/Hospital_management.git
-cd medical-ai-system
+cd Hospital_management
 
 # Run setup
 python setup.py
