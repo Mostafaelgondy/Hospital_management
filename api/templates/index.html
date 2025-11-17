@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Disease Prediction System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-right: 2px solid #e9ecef;
+        }
+
+        .results-section {
+            background: white;
+            padding: 30px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .symptoms-section {
+            margin-top: 30px;
+        }
+
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .symptom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .symptom-checkbox:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .symptom-checkbox input {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1ecf1 100%);
+            border: 2px solid #b8d8e6;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .prediction {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .confidence {
+            font-size: 1.1rem;
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .probabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .probability-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e1e5e9;
+            transition: all 0.3s ease;
+        }
+
+        .probability-item:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .probability-item.high {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .system-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+        }
+
+        .system-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .test-btn {
+            flex: 1;
+            padding: 10px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Medical Disease Prediction System</h1>
+            <p>AI-powered clinical decision support for healthcare professionals</p>
+        </div>
+
+        <div class="content">
+            <!-- Left Side: Patient Data Input Form -->
+            <div class="form-section">
+                <h2 class="section-title">Patient Data Input</h2>
+                
+                <form id="predictionForm">
+                    <!-- Personal Information -->
+                    <div class="form-group">
+                        <label for="age">Age (years)</label>
+                        <input type="number" id="age" name="age" min="1" max="120" required 
+                               placeholder="Enter patient age">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select gender</option>
+                            <option value="0">Male</option>
+                            <option value="1">Female</option>
+                        </select>
+                    </div>
+
+                    <!-- Vital Signs -->
+                    <div class="form-group">
+                        <label for="bmi">BMI (Body Mass Index)</label>
+                        <input type="number" id="bmi" name="bmi" step="0.1" min="15" max="40" required 
+                               placeholder="e.g., 25.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blood_pressure_sys">Systolic Blood Pressure (mmHg)</label>
+                        <input type="number" id="blood_pressure_sys" name="blood_pressure_sys" min="80" max="180" required 
+                               placeholder="e.g., 120">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blood_pressure_dia">Diastolic Blood Pressure (mmHg)</label>
+                        <input type="number" id="blood_pressure_dia" name="blood_pressure_dia" min="50" max="120" required 
+                               placeholder="e.g., 80">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cholesterol">Cholesterol Level (mg/dL)</label>
+                        <input type="number" id="cholesterol" name="cholesterol" min="150" max="300" required 
+                               placeholder="e.g., 200">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blood_sugar">Blood Sugar Level (mg/dL)</label>
+                        <input type="number" id="blood_sugar" name="blood_sugar" min="70" max="200" required 
+                               placeholder="e.g., 100">
+                    </div>
+
+                    <!-- Symptoms Section -->
+                    <div class="symptoms-section">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">Symptoms Checklist</h3>
+                        <div class="symptoms-grid" id="symptomsContainer">
+                            <!-- Symptoms will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        🔍 Analyze & Predict Disease
+                    </button>
+
+                    <!-- Test Buttons -->
+                    <div class="test-buttons">
+                        <button type="button" class="test-btn" onclick="fillHypertensionCase()">
+                            Test Hypertension
+                        </button>
+                        <button type="button" class="test-btn" onclick="fillDiabetesCase()">
+                            Test Diabetes
+                        </button>
+                        <button type="button" class="test-btn" onclick="fillInfluenzaCase()">
+                            Test Influenza
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Side: Results & System Info -->
+            <div class="results-section">
+                <h2 class="section-title">Prediction Results</h2>
+                
+                <!-- Loading Indicator -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing patient data with AI model...</p>
+                </div>
+
+                <!-- Results Card -->
+                <div class="result-card" id="resultCard">
+                    <div class="prediction" id="predictionResult"></div>
+                    <div class="confidence" id="confidenceLevel"></div>
+                    
+                    <h3 style="color: #2c3e50; margin: 20px 0 10px 0;">Probability Distribution:</h3>
+                    <div class="probabilities" id="probabilitiesList"></div>
+                </div>
+
+                <!-- System Statistics -->
+                <div class="stats-grid" id="statsGrid">
+                    <!-- Statistics will be populated by JavaScript -->
+                </div>
+
+                <!-- System Information -->
+                <div class="system-info">
+                    <h3>System Information</h3>
+                    <div id="systemInfo">
+                        <p>Loading system information...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Symptoms list (matches the model training)
+        const symptoms = [
+            'headache', 'dizziness', 'chest_pain', 'fatigue', 'frequent_urination',
+            'thirst', 'fever', 'cough', 'shortness_breath', 'wheezing',
+            'chest_tightness', 'joint_pain', 'swelling', 'stiffness', 'nausea',
+            'sensitivity_light', 'abdominal_pain', 'bloating'
+        ];
+
+        // Populate symptoms checkboxes
+        function populateSymptoms() {
+            const container = document.getElementById('symptomsContainer');
+            symptoms.forEach(symptom => {
+                const div = document.createElement('div');
+                div.className = 'symptom-checkbox';
+                div.innerHTML = `
+                    <input type="checkbox" id="${symptom}" name="${symptom}" value="1">
+                    <label for="${symptom}">${symptom.replace(/_/g, ' ').toUpperCase()}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Load system statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('statsGrid').innerHTML = '<p>Error loading statistics</p>';
+                    return;
+                }
+
+                const statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${data.patient_count}</div>
+                        <div class="stat-label">TOTAL PATIENTS</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${data.exam_count}</div>
+                        <div class="stat-label">EXAMINATIONS</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${data.disease_distribution.length}</div>
+                        <div class="stat-label">DISEASES TRACKED</div>
+                    </div>
+                `;
+                
+                document.getElementById('statsGrid').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultCard').style.display = 'none';
+
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {};
+            
+            // Add basic info
+            data.age = parseInt(formData.get('age'));
+            data.gender = parseInt(formData.get('gender'));
+            data.bmi = parseFloat(formData.get('bmi'));
+            data.blood_pressure_sys = parseInt(formData.get('blood_pressure_sys'));
+            data.blood_pressure_dia = parseInt(formData.get('blood_pressure_dia'));
+            data.cholesterol = parseInt(formData.get('cholesterol'));
+            data.blood_sugar = parseInt(formData.get('blood_sugar'));
+            
+            // Add symptoms (default to 0 if not checked)
+            symptoms.forEach(symptom => {
+                data[symptom] = formData.get(symptom) ? 1 : 0;
+            });
+
+            try {
+                // Send prediction request
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.error) {
+                    showError('Prediction error: ' + result.error);
+                    return;
+                }
+
+                // Display results
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                showError('Error making prediction: ' + error.message);
+            }
+        });
+
+        // Display prediction results
+        function displayResults(result) {
+            document.getElementById('predictionResult').textContent = 
+                `🧬 PREDICTED DISEASE: ${result.prediction.toUpperCase()}`;
+            document.getElementById('confidenceLevel').textContent = 
+                `🎯 CONFIDENCE: ${(result.confidence * 100).toFixed(2)}%`;
+            
+            // Display probabilities
+            const probabilitiesList = document.getElementById('probabilitiesList');
+            probabilitiesList.innerHTML = '';
+            
+            for (const [disease, prob] of Object.entries(result.probabilities)) {
+                const probItem = document.createElement('div');
+                const probabilityPercent = (prob * 100).toFixed(1);
+                probItem.className = `probability-item ${prob > 0.1 ? 'high' : ''}`;
+                probItem.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 5px;">${disease}</div>
+                    <div style="font-size: 1.1rem; color: #2c3e50;">${probabilityPercent}%</div>
+                `;
+                probabilitiesList.appendChild(probItem);
+            }
+            
+            // Show result card
+            document.getElementById('resultCard').style.display = 'block';
+        }
+
+        // Show error message
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="alert alert-error">${message}</div>`;
+        }
+
+        // Test case functions
+        function fillHypertensionCase() {
+            document.getElementById('age').value = 55;
+            document.getElementById('gender').value = '0';
+            document.getElementById('bmi').value = 28.5;
+            document.getElementById('blood_pressure_sys').value = 145;
+            document.getElementById('blood_pressure_dia').value = 95;
+            document.getElementById('cholesterol').value = 240;
+            document.getElementById('blood_sugar').value = 105;
+            
+            // Set hypertension symptoms
+            document.getElementById('headache').checked = true;
+            document.getElementById('dizziness').checked = true;
+            document.getElementById('chest_pain').checked = false;
+            
+            alert('Hypertension test case loaded! Click "Analyze & Predict Disease" to see results.');
+        }
+
+        function fillDiabetesCase() {
+            document.getElementById('age').value = 48;
+            document.getElementById('gender').value = '1';
+            document.getElementById('bmi').value = 32.0;
+            document.getElementById('blood_pressure_sys').value = 130;
+            document.getElementById('blood_pressure_dia').value = 85;
+            document.getElementById('cholesterol').value = 210;
+            document.getElementById('blood_sugar').value = 180;
+            
+            // Set diabetes symptoms
+            document.getElementById('fatigue').checked = true;
+            document.getElementById('frequent_urination').checked = true;
+            document.getElementById('thirst').checked = true;
+            
+            alert('Diabetes test case loaded! Click "Analyze & Predict Disease" to see results.');
+        }
+
+        function fillInfluenzaCase() {
+            document.getElementById('age').value = 35;
+            document.getElementById('gender').value = '0';
+            document.getElementById('bmi').value = 24.5;
+            document.getElementById('blood_pressure_sys').value = 120;
+            document.getElementById('blood_pressure_dia').value = 80;
+            document.getElementById('cholesterol').value = 190;
+            document.getElementById('blood_sugar').value = 95;
+            
+            // Set influenza symptoms
+            document.getElementById('fever').checked = true;
+            document.getElementById('cough').checked = true;
+            document.getElementById('fatigue').checked = true;
+            
+            alert('Influenza test case loaded! Click "Analyze & Predict Disease" to see results.');
+        }
+
+        // Load system info
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('systemInfo').innerHTML = '<p>Error loading system information</p>';
+                    return;
+                }
+
+                let infoHtml = `
+                    <p><strong>System Status:</strong> <span style="color: #27ae60;">🟢 OPERATIONAL</span></p>
+                    <p><strong>AI Model:</strong> ${data.model_type}</p>
+                    <p><strong>Model Status:</strong> ${data.model_loaded ? '✅ LOADED' : '❌ NOT LOADED'}</p>
+                    <p><strong>Database:</strong> ${data.database ? '✅ CONNECTED' : '❌ NOT FOUND'}</p>
+                `;
+                
+                document.getElementById('systemInfo').innerHTML = infoHtml;
+                
+            } catch (error) {
+                document.getElementById('systemInfo').innerHTML = '<p>Error loading system information</p>';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateSymptoms();
+            loadStats();
+            loadSystemInfo();
+            
+            // Set some default values for quick testing
+            document.getElementById('age').value = 45;
+            document.getElementById('gender').value = '0';
+            document.getElementById('bmi').value = 25.5;
+            document.getElementById('blood_pressure_sys').value = 120;
+            document.getElementById('blood_pressure_dia').value = 80;
+            document.getElementById('cholesterol').value = 200;
+            document.getElementById('blood_sugar').value = 100;
+        });
+    </script>
+</body>
+</html>

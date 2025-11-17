@@ -1,0 +1,11 @@
+exam_id,patient_id,exam_date,physician_id,symptoms,diagnosis,treatment,medication,next_appointment,first_name,last_name
+1,1,2025-10-29,1,"Chest pain, shortness of breath",Hypertension,"Lifestyle changes, medication",Lisinopril 10mg,2025-12-16,John,Smith
+2,2,2025-11-06,1,"Headache, dizziness",Migraine,"Rest, hydration",Ibuprofen 400mg,2026-01-19,Maria,Garcia
+3,3,2025-11-01,1,"Fever, cough, fatigue",Influenza,"Rest, fluids",Tamiflu 75mg,2025-12-13,David,Johnson
+4,4,2025-10-19,2,"Joint pain, swelling",Rheumatoid Arthritis,Physical therapy,Methotrexate 15mg,2025-12-05,Sarah,Williams
+5,5,2025-11-01,1,"Abdominal pain, nausea",Gastritis,Diet modification,Omeprazole 20mg,2026-01-25,Michael,Brown
+6,6,2025-11-04,1,"Back pain, limited mobility",Herniated Disc,Physical therapy,Naproxen 500mg,2025-12-07,Emily,Davis
+7,7,2025-11-05,1,"Skin rash, itching",Contact Dermatitis,Topical treatment,Hydrocortisone cream,2026-01-03,Robert,Miller
+8,8,2025-11-11,2,"Sore throat, fever",Strep Throat,Antibiotics,Amoxicillin 500mg,2025-12-09,Lisa,Wilson
+9,9,2025-11-01,2,"Eye redness, discharge",Conjunctivitis,Eye drops,Tobramycin drops,2025-12-12,James,Taylor
+10,10,2025-11-04,1,"Shortness of breath, wheezing",Asthma,Inhaler therapy,Albuterol inhaler,2025-12-01,Jennifer,Anderson
